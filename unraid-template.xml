@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>FileShare</Name>
+  <Repository>yourusername/fileshare:latest</Repository>
+  <Registry>https://hub.docker.com/r/yourusername/fileshare/</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/yourusername/fileshare/issues</Support>
+  <Project>https://github.com/yourusername/fileshare</Project>
+  <Overview>
+    FileShare is a temporary file sharing application that allows users to upload files, generate public shareable links, and automatically delete files after a specified time.
+    
+    Features:
+    - Upload files via drag-and-drop or file browser
+    - Configurable deletion times (10 minutes, 1 hour, 24 hours, 7 days)
+    - Shareable links for easy file distribution
+    - Automatic cleanup of expired files
+    - Beautiful, user-friendly interface
+    
+    NOTE: This container requires a PostgreSQL database. Either:
+    1. Install the PostgreSQL container first, OR
+    2. Use an external PostgreSQL instance (configure DATABASE_URL)
+  </Overview>
+  <Category>Tools: Productivity: Status:Stable</Category>
+  <WebUI>http://[IP]:[PORT:5000]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/yourusername/fileshare-templates/main/unraid-template.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/yourusername/fileshare/main/icon.png</Icon>
+  <ExtraParams>--restart=unless-stopped</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>
+    PostgreSQL database (install postgres:16-alpine container or use external instance)
+  </Requires>
+  <Config Name="WebUI Port" Target="5000" Default="5000" Mode="tcp" Description="Web interface port" Type="Port" Display="always" Required="true" Mask="false">5000</Config>
+  
+  <Config Name="Upload Storage" Target="/app/uploads" Default="/mnt/user/appdata/fileshare/uploads" Mode="rw" Description="Directory where uploaded files are stored" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/fileshare/uploads</Config>
+  
+  <Config Name="DATABASE_URL" Target="DATABASE_URL" Default="postgresql://fileshare:CHANGE_ME@fileshare-db:5432/fileshare" Mode="" Description="PostgreSQL connection string. Format: postgresql://user:password@host:port/database. IMPORTANT: Change the password!" Type="Variable" Display="always" Required="true" Mask="false">postgresql://fileshare:CHANGE_ME@fileshare-db:5432/fileshare</Config>
+  
+  <Config Name="SESSION_SECRET" Target="SESSION_SECRET" Default="" Mode="" Description="Secret key for session encryption (REQUIRED). Generate a random 32+ character string. You can use: openssl rand -base64 32" Type="Variable" Display="always" Required="true" Mask="true"/>
+  
+  <Config Name="STORAGE_TYPE" Target="STORAGE_TYPE" Default="local" Mode="" Description="Storage backend type (local or gcs)" Type="Variable" Display="advanced" Required="false" Mask="false">local</Config>
+  
+  <Config Name="PORT" Target="PORT" Default="5000" Mode="" Description="Application port (should match container port)" Type="Variable" Display="advanced" Required="false" Mask="false">5000</Config>
+  
+  <Config Name="TZ" Target="TZ" Default="America/New_York" Mode="" Description="Timezone for log timestamps and cron scheduler" Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
+  
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="User ID for file permissions" Type="Variable" Display="advanced" Required="false" Mask="false">99</Config>
+  
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Group ID for file permissions" Type="Variable" Display="advanced" Required="false" Mask="false">100</Config>
+  
+  <Config Name="NODE_ENV" Target="NODE_ENV" Default="production" Mode="" Description="Node.js environment (production recommended)" Type="Variable" Display="advanced" Required="false" Mask="false">production</Config>
+</Container>

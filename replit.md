@@ -145,3 +145,54 @@ Loaded via Google Fonts CDN:
 - JetBrains Mono (monospace for codes/links)
 - DM Sans, Fira Code, Geist Mono (design system alternatives)
 - Architects Daughter (decorative)
+
+## Docker Deployment
+
+The application is fully containerized and can be deployed using Docker and Docker Compose. This enables deployment on various platforms including Unraid, standard Docker hosts, and cloud providers.
+
+### Docker Configuration
+
+**Multi-Stage Dockerfile:**
+- Stage 1: Build frontend (Vite compilation)
+- Stage 2: Prepare backend dependencies
+- Stage 3: Production runtime (Alpine-based, ~100MB)
+
+**Key Features:**
+- Non-root user execution for security
+- Health check endpoint at `/health`
+- Persistent volumes for uploads and database
+- Environment-based configuration
+- Automatic container restart
+
+**Deployment Files:**
+- `Dockerfile` - Multi-stage production build
+- `docker-compose.yml` - Complete stack with PostgreSQL
+- `.dockerignore` - Build optimization
+- `unraid-template.xml` - Unraid Community Applications template
+- `DOCKER_DEPLOYMENT.md` - Comprehensive deployment guide
+- `build-and-push.sh` - DockerHub publishing script
+
+### Storage Adaptation
+
+For Docker deployment, the application supports two storage modes:
+1. **Replit Mode**: Uses Google Cloud Storage with sidecar authentication (default in Replit)
+2. **Local Mode**: Uses local filesystem storage for standalone Docker deployment (set `STORAGE_TYPE=local`)
+
+### Required Environment Variables (Docker)
+
+- `DATABASE_URL` - PostgreSQL connection string
+- `SESSION_SECRET` - Random 32+ character string for session encryption
+- `STORAGE_TYPE` - Set to "local" for Docker deployment
+- `TZ` - Timezone for cron scheduler
+
+### Volumes
+
+- `/app/uploads` - Persistent file storage
+- PostgreSQL data volume for database persistence
+
+### Deployment Platforms
+
+- **Docker Compose**: Local development and self-hosted deployments
+- **Unraid**: One-click installation via Community Applications template
+- **Standard Docker**: Manual container deployment with docker run
+- **Cloud Platforms**: Compatible with any Docker-capable hosting (AWS ECS, Google Cloud Run, Azure Container Instances, etc.)
