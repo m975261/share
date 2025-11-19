@@ -71,6 +71,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Health check endpoint for Docker
+  app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   // Endpoint to download file
   app.get("/objects/:objectPath(*)", async (req, res) => {
     try {
