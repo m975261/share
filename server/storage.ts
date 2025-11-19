@@ -1,37 +1,61 @@
-import { type User, type InsertUser } from "@shared/schema";
+import { type FileMetadata, type InsertFile } from "@shared/schema";
 import { randomUUID } from "crypto";
 
-// modify the interface with any CRUD methods
-// you might need
-
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getFile(id: string): Promise<FileMetadata | undefined>;
+  getFileByObjectPath(objectPath: string): Promise<FileMetadata | undefined>;
+  createFile(file: InsertFile): Promise<FileMetadata>;
+  incrementDownloadCount(id: string): Promise<void>;
+  getExpiredFiles(): Promise<FileMetadata[]>;
+  deleteFile(id: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+  private files: Map<string, FileMetadata>;
 
   constructor() {
-    this.users = new Map();
+    this.files = new Map();
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getFile(id: string): Promise<FileMetadata | undefined> {
+    return this.files.get(id);
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
+  async getFileByObjectPath(objectPath: string): Promise<FileMetadata | undefined> {
+    return Array.from(this.files.values()).find(
+      (file) => file.objectPath === objectPath
     );
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async createFile(insertFile: InsertFile): Promise<FileMetadata> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const file: FileMetadata = {
+      ...insertFile,
+      id,
+      uploadTime: new Date(),
+      downloadCount: 0,
+    };
+    this.files.set(id, file);
+    return file;
+  }
+
+  async incrementDownloadCount(id: string): Promise<void> {
+    const file = this.files.get(id);
+    if (file) {
+      file.downloadCount += 1;
+      this.files.set(id, file);
+    }
+  }
+
+  async getExpiredFiles(): Promise<FileMetadata[]> {
+    const now = new Date();
+    return Array.from(this.files.values()).filter(
+      (file) => new Date(file.expirationTime) < now
+    );
+  }
+
+  async deleteFile(id: string): Promise<void> {
+    this.files.delete(id);
   }
 }
 
