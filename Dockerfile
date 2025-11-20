@@ -20,8 +20,8 @@ COPY tsconfig.json ./
 COPY postcss.config.js ./
 COPY components.json ./
 
-# Build frontend
-RUN npm run build
+# Build frontend only (not backend - it runs with tsx)
+RUN npx vite build
 
 # ============================================
 # Stage 2: Build Backend
