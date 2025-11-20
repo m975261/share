@@ -11,12 +11,14 @@ COPY package*.json ./
 # Install all dependencies (including dev dependencies for build)
 RUN npm ci
 
-# Copy frontend source files
+# Copy frontend source files and configuration
 COPY client ./client
 COPY shared ./shared
 COPY vite.config.ts ./
 COPY tailwind.config.ts ./
 COPY tsconfig.json ./
+COPY postcss.config.js ./
+COPY components.json ./
 
 # Build frontend
 RUN npm run build
